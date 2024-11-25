@@ -1,8 +1,6 @@
 import * as vscode from 'vscode'
-import path from 'node:path'
 import get from 'lodash.get'
 import nodePath from 'path'
-import compact from 'lodash.compact'
 
 import {
   SettingsType,
@@ -31,29 +29,18 @@ export function log(...messages: any[]) {
 export function getWorkspace() {
   const uri = vscode.window.activeTextEditor.document.uri.path
 
-  // Looping through all workspace folders
-  // And return the first one that contains the file
-  for (let workspace of vscode.workspace.workspaceFolders) {
-    let parts = uri.split(path.sep).filter(Boolean)
-    let index = parts.findIndex((o) => o === workspace.name)
+  const workspace = new WorkSpace(uri)
+  const project = workspace.toJSON()
 
-    if (index >= 0) {
-      let root = parts.slice(0, index + 1).join('/')
-
-      const workspace = new WorkSpace(uri)
-      const project = workspace.toJSON()
-
-      let item = {
-        uri: project.uri,
-        name: project.name,
-        remoteName: project.remoteName,
-        path: root,
-        method: workspace,
-      }
-
-      return item
-    }
+  let item = {
+    uri: project.uri,
+    name: project.name,
+    remoteName: project.remoteName,
+    path: project.root,
+    method: workspace,
   }
+
+  return item
 }
 
 export function createTerminal(name: string, path: string) {

@@ -11,6 +11,14 @@ const window = {
   showErrorMessage: vi.fn(),
   showWarningMessage: vi.fn(),
   createTextEditorDecorationType: vi.fn(),
+  activeTextEditor: {
+    document: { uri: { path: vi.fn() } },
+  },
+  createOutputChannel: function (name) {
+    return {
+      appendLine: vi.fn(),
+    }
+  },
 }
 
 const workspace = {

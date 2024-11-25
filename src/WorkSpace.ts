@@ -19,6 +19,7 @@ export default class WorkSpace {
 
       if (index >= 0) {
         this.rootUri = ['', ...parts.slice(0, index + 1)].join('/')
+        return this
       }
     }
   }
@@ -30,6 +31,7 @@ export default class WorkSpace {
     return {
       uri: this.originalUri,
       name: this.name,
+      root: this.rootUri,
       remoteName: vscode.env.remoteName,
     }
   }

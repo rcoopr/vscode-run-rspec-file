@@ -2,6 +2,7 @@ import * as vscode from 'vscode'
 import { describe, expect, test, vi } from 'vitest'
 import FileObject from '../src/FileObject'
 import WorkSpace from '../src/WorkSpace'
+import { getWorkspace } from '../src/Utils'
 
 describe('#toJSON', () => {
   test('with rails app spec file', () => {
@@ -172,5 +173,38 @@ describe('#toJSON', () => {
     let result = object.toJSON()
 
     expect(result.specPath).toBe('spec/models/user_spec.rb')
+  })
+
+  describe('sibling of app folder', () => {
+    test.only('/User/developer/todo-app/packs/spec/features/review_results/review_results_spec.rb', () => {
+      let filepath = '/Users/developer/todo-app/packs/spec/features/review_results/review_results_spec.rb'
+
+      let workspaceFolders = [{ name: 'todo-app', uri: vscode.Uri.file('/Users/developer/todo-app'), index: 0 }]
+      vi.spyOn(vscode.workspace, 'workspaceFolders', 'get').mockReturnValue(workspaceFolders)
+
+      // @ts-ignore
+      vi.spyOn(vscode.window, 'activeTextEditor', 'get').mockReturnValue({ document: { uri: { path: filepath } } })
+
+      let workspace = getWorkspace()
+      let file = workspace.method.fromFileUri({})
+
+      // console.log(workspace)
+      // console.log(file)
+
+      expect(workspace.name).toBe('todo-app')
+      expect(workspace.uri).toBe('/Users/developer/todo-app')
+      expect(workspace.method.rootUri).toBe('/Users/developer/todo-app')
+      expect(workspace.method.originalUri).toBe('/Users/developer/todo-app')
+      expect(workspace.method.fileUri).toBe('/Users/developer/todo-app/packs/spec/features/review_results/review_results_spec.rb')
+
+      expect(file.namespace).toBe('packs')
+      expect(file.name).toBe('spec/features/review_results/review_results_spec.rb')
+      expect(file.ext).toBe('.rb')
+      expect(file.suffix).toBe('spec')
+
+      expect(file.isRailsApp).toBe(true)
+      expect(file.specPath).toBe('packs/spec/features/review_results/review_results_spec.rb')
+      expect(file.inversePath).toBe('app/features/review_results/review_results.rb')
+    })
   })
 })
