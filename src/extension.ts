@@ -12,6 +12,7 @@ import {
   createTerminal,
   log,
 } from './Utils'
+import { RubyTestCodeLensProvider } from './CodeLensProvider'
 
 let terminals = {}
 let lastExecuted = ''
@@ -129,6 +130,9 @@ async function toggleFile() {
 }
 
 export async function activate(context: vscode.ExtensionContext) {
+  let config = await factorySettings()
+  let workspace = getWorkspace()
+
   context.subscriptions.push(vscode.commands.registerCommand('extension.runOpenSpec', toggleFile))
 
   context.subscriptions.push(
@@ -150,9 +154,9 @@ export async function activate(context: vscode.ExtensionContext) {
   )
 
   context.subscriptions.push(
-    vscode.commands.registerCommand('extension.runLineOnRspec', async () => {
+    vscode.commands.registerCommand('extension.runLineOnRspec', async (lineNumber?: number) => {
       clearTerminal().then(async () => {
-        let line = getActiveLine()
+        let line = lineNumber || getActiveLine()
         return bundleRspecFile(line)
       })
     }),
@@ -163,6 +167,14 @@ export async function activate(context: vscode.ExtensionContext) {
       clearTerminal().then(() => bundleRspecLastExecuted())
     }),
   )
+
+  if (config.codeLensEnabled) {
+    const docSelectors: vscode.DocumentSelector = [{
+      pattern: config.codeLensSelector,
+    }]
+    const codeLensProviderDisposable = vscode.languages.registerCodeLensProvider(docSelectors, new RubyTestCodeLensProvider())
+    context.subscriptions.push(codeLensProviderDisposable)
+  }
 }
 
 export function deactivate() {}

@@ -11,6 +11,8 @@ import {
   SETTINGS_SUFFIX_FILE,
   SETTINGS_INTEGRATION_TYPE,
   SETTINGS_DEFAULT,
+  SETTINGS_CODE_LENS_ENABLED,
+  SETTINGS_CODE_LENS_SELECTOR,
 } from './Constants'
 
 import WorkSpace from './WorkSpace'
@@ -151,6 +153,8 @@ export async function factorySettings(key?: keyof SettingsType) {
       controllerFolder: get(local, SETTINGS_RSPEC_CONTROLLER_FOLDER) || globals['controllerFolder'],
       suffix: get(local, SETTINGS_SUFFIX_FILE) || globals['suffix'],
       integration: get(local, SETTINGS_INTEGRATION_TYPE) || globals['integration'],
+      codeLensEnabled: get(local, SETTINGS_CODE_LENS_ENABLED) || globals['codeLensEnabled'],
+      codeLensSelector: get(local, SETTINGS_CODE_LENS_SELECTOR) || globals['codeLensSelector'],
     }
 
     settingsCache[workspaceName] = mapping
